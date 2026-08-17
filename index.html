@@ -27,7 +27,7 @@
     .card { padding:18px }
     .label { color:var(--muted); font-size:.82rem; text-transform:uppercase; letter-spacing:.08em }
     .value { font-size:1.65rem; font-weight:700; margin-top:5px }
-    .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:16px; margin-top:16px }
     .panel { padding:18px; min-width:0 }
     .panel h2 { margin:0 0 14px; font-size:1rem }
     .chart-wrap { height:320px }
@@ -53,7 +53,7 @@
 <main>
   <header>
     <h1>Enumeration Results</h1>
-    <p class="lead">Performance and result distributions for pips 3 through 9.</p>
+    <p class="lead">Performance and result distributions for pips 3 through 10.</p>
   </header>
 
   <section class="cards" id="cards"></section>
@@ -66,6 +66,10 @@
     <article class="panel">
       <h2>Peak count by pips</h2>
       <div class="chart-wrap"><canvas id="peakChart"></canvas></div>
+    </article>
+    <article class="panel">
+      <h2>Peak RAM by pips</h2>
+      <div class="chart-wrap"><canvas id="ramChart"></canvas></div>
     </article>
   </section>
 
@@ -81,7 +85,9 @@ View raw results.txt on GitHub
 <script id="raw-data" type="text/plain">
 pips = 3
 
-Total CPU time used:     675µs
+User CPU time used:      283µs
+Peak RAM change (MaxRSS): 1 MB
+
 1 16
 2 48
 3 132
@@ -96,7 +102,8 @@ Total CPU time used:     675µs
 ---------------------
 pips = 4
 
-Total CPU time used:     1.239ms
+User CPU time used:      480µs
+Peak RAM change (MaxRSS): 1 MB
 
 1 25
 2 100
@@ -117,7 +124,8 @@ Total CPU time used:     1.239ms
 ---------------------
 pips = 5
 
-Total CPU time used:     3.243ms
+User CPU time used:      979µs
+Peak RAM change (MaxRSS): 2 MB
 
 1 36
 2 180
@@ -144,7 +152,8 @@ Total CPU time used:     3.243ms
 ---------------------
 pips = 6
 
-Total CPU time used:     11.841ms
+User CPU time used:      4.107ms
+Peak RAM change (MaxRSS): 5 MB
 
 1 49
 2 294
@@ -177,7 +186,9 @@ Total CPU time used:     11.841ms
 
 ---------------------
 pips = 7
-Total CPU time used:     107.726ms
+
+User CPU time used:      45.923ms
+Peak RAM change (MaxRSS): 7 MB
 
 1 64
 2 448
@@ -219,7 +230,8 @@ Total CPU time used:     107.726ms
 ---------------------
 pips = 8
 
-Total CPU time used:     1.76987s
+User CPU time used:      1.072513s
+Peak RAM change (MaxRSS): 15 MB
 
 1 81
 2 648
@@ -270,7 +282,8 @@ Total CPU time used:     1.76987s
 ---------------------
 pips = 9
 
-Total CPU time used:     56.795232s
+User CPU time used:      38.495222s
+Peak RAM change (MaxRSS): 243 MB
 
 1 100
 2 900
@@ -327,44 +340,130 @@ Total CPU time used:     56.795232s
 53 0
 54 0
 55 0
+
+---------------------
+pips = 10
+
+User CPU time used:      1h2m14.208548s
+Peak RAM change (MaxRSS): 11593 MB
+
+1 121
+2 1210
+3 11990
+4 117810
+5 1138500
+6 10812780
+7 100995840
+8 927622080
+9 8374029840
+10 74273466960
+11 647054266320
+12 5534970487200
+13 46473074968320
+14 382858316517600
+15 3093582638139840
+16 24507703843207200
+17 190275784679534400
+18 1447171736265984960
+19 10777573462391809920
+20 78557449531346755200
+21 560159831547623260800
+22 3905518157560381824000
+23 26611052617247091840000
+24 177103333114338437452800
+25 1150605752759313601766400
+26 7292958889647878611718400
+27 45070080348064661623641600
+28 271391894952804180501408000
+29 1591225364535167174958144000
+30 9077779725364636351086067200
+31 50351322883942464297519513600
+32 271317343243608628504983244800
+33 1419097362086226355166217830400
+34 7198234438244545205464498790400
+35 35375839978403944154928818995200
+36 168273859593251870592971422924800
+37 773908276634678922082285466419200
+38 3437381561278313941216781436518400
+39 14726485858517613969027174590054400
+40 60776096079615325214828157060710400
+41 241276685005810687998816958994841600
+42 919997680031321115635523899935948800
+43 3363847504620640352306352983133388800
+44 11773335619747013819678833798692864000
+45 39369144075258138400673585142438297600
+46 125524917324624601052711226889961472000
+47 380798392398658748357458567840609075200
+48 1096690507309779836453379916019269632000
+49 2991598980541904916725410053978115276800
+50 7711762539800445888101219164389113856000
+51 18743674618152188049130504554975068160000
+52 42861989901747451524350429344752363110400
+53 92032293309099860087062030685824037683200
+54 185214115803454290325523633349535255756800
+55 348804783800625463485160515834361990348800
+56 613881293462547589793799738196285508812800
+57 1008558067895752744312563466450973491200000
+58 1544981181995225116061771966700532531200000
+59 2202802921457957261151810618585513984000000
+60 2917135519711932208811873399860101120000000
+61 3588033973989989766884706672716021760000000
+62 4104923969078162969271423303942144000000000
+63 4300915510678663526347099298856960000000000
+64 3842314275732852999971518650777600000000000
+65 2487829387165156618686594809856000000000000
+66 829276462388385539562198269952000000000000
 </script>
 <script>
 const source = document.getElementById('raw-data').textContent.trim();
 const chunks = source.split(/-{5,}/).map(s => s.trim()).filter(Boolean);
 
+// Go's duration format prints only the units present, largest-to-smallest
+// (e.g. "1h2m14.208548s", "45.923ms", "283µs"), with at most the smallest
+// present unit carrying a fractional part. The alternation below tries
+// 'µs'/'ms' before 'm'/'s' - otherwise "45.923ms" mismatches as 45.923
+// minutes, since a naive left-to-right 'm' alternative matches the 'm' in
+// "ms" first and strands the trailing "s".
 function timeToMs(text) {
-  const m = text.match(/([\d.]+)\s*(µs|ms|s)/);
-  if (!m) return 0;
-  const n = Number(m[1]);
-  return m[2] === 'µs' ? n / 1000 : m[2] === 's' ? n * 1000 : n;
+  let ms = 0;
+  const re = /(\d+(?:\.\d+)?)(h|µs|ms|m|s)/g;
+  let m;
+  while ((m = re.exec(text))) {
+    const n = Number(m[1]);
+    ms += { h:3600000, m:60000, s:1000, ms:1, 'µs':0.001 }[m[2]] * n;
+  }
+  return ms;
 }
 
 const runs = chunks.map(chunk => {
   const pips = Number(chunk.match(/pips\s*=\s*(\d+)/)[1]);
-  const time = chunk.match(/Total CPU time used:\s*([^\n]+)/)[1].trim();
+  const time = chunk.match(/User CPU time used:\s*([^\n]+)/)[1].trim();
+  const ramMb = Number(chunk.match(/Peak RAM change \(MaxRSS\):\s*(\d+) MB/)[1]);
   const rows = [...chunk.matchAll(/^\s*(\d+)\s+(\d+)\s*$/gm)]
     .map(m => ({ value:Number(m[1]), count:m[2] }));
   let peak = rows[0];
   for (const row of rows) {
     if (BigInt(row.count) > BigInt(peak.count)) peak = row;
   }
-  return { pips, time, timeMs:timeToMs(time), rows, peak };
+  return { pips, time, timeMs:timeToMs(time), ramMb, rows, peak };
 });
 
 const integer = value => BigInt(value).toLocaleString('en-US');
+const formatRam = mb => mb >= 1024 ? `${(mb/1024).toFixed(1)} GB` : `${mb} MB`;
 
 document.getElementById('cards').innerHTML = `
   <div class="card"><div class="label">Pips range</div><div class="value">${runs[0].pips}–${runs.at(-1).pips}</div></div>
   <div class="card"><div class="label">Fastest run</div><div class="value">${runs[0].time}</div></div>
   <div class="card"><div class="label">Slowest run</div><div class="value">${runs.at(-1).time}</div></div>
   <div class="card"><div class="label">Largest peak</div><div class="value">${integer(runs.at(-1).peak.count)}</div></div>
+  <div class="card"><div class="label">Peak RAM (largest run)</div><div class="value">${formatRam(runs.at(-1).ramMb)}</div></div>
 `;
 
 document.getElementById('results').innerHTML = runs.map((run, i) => `
   <details ${i === runs.length - 1 ? 'open' : ''}>
     <summary>
       <span>Pips = ${run.pips}</span>
-      <span class="time">${run.time}</span>
+      <span><span class="time">${run.time}</span> · ${formatRam(run.ramMb)}</span>
     </summary>
     <div class="table-wrap">
       <table>
@@ -410,6 +509,25 @@ new Chart(document.getElementById('peakChart'), {
     },
     scales:{
       y:{ title:{ display:true, text:'log₁₀(count)' } },
+      x:{ grid:{ display:false } }
+    }
+  }
+});
+
+new Chart(document.getElementById('ramChart'), {
+  type:'line',
+  data:{
+    labels:runs.map(r => `pips ${r.pips}`),
+    datasets:[{ label:'Peak RAM (MB)', data:runs.map(r => r.ramMb), tension:.25, pointRadius:5 }]
+  },
+  options:{
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{ display:false },
+      tooltip:{ callbacks:{ label:ctx => 'Peak RAM: ' + formatRam(runs[ctx.dataIndex].ramMb) } }
+    },
+    scales:{
+      y:{ type:'logarithmic', title:{ display:true, text:'MB — log scale' } },
       x:{ grid:{ display:false } }
     }
   }
