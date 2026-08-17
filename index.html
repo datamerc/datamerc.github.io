@@ -25,8 +25,13 @@
       background:var(--panel); border:1px solid var(--border); border-radius:12px;
     }
     .card { padding:18px }
+    .card.wide { grid-column:1/-1 }
     .label { color:var(--muted); font-size:.82rem; text-transform:uppercase; letter-spacing:.08em }
     .value { font-size:1.65rem; font-weight:700; margin-top:5px }
+    .card.wide .value {
+      font-size:1.15rem; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+      word-break:break-all; font-variant-numeric:tabular-nums;
+    }
     .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:16px; margin-top:16px }
     .panel { padding:18px; min-width:0 }
     .panel h2 { margin:0 0 14px; font-size:1rem }
@@ -46,6 +51,11 @@
     th { position:sticky; top:0; background:#1c2128; color:var(--muted); font-size:.78rem; text-transform:uppercase }
     td:last-child { font-family:ui-monospace,SFMono-Regular,Menlo,monospace }
     footer { color:var(--muted); margin-top:24px; text-align:center }
+    .raw-pre {
+      margin:0; padding:16px 18px; overflow-x:auto; white-space:pre;
+      font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.8rem;
+      line-height:1.5; border-top:1px solid var(--border);
+    }
     @media (max-width:780px) { .grid { grid-template-columns:1fr } .chart-wrap { height:280px } }
   </style>
 </head>
@@ -53,7 +63,7 @@
 <main>
   <header>
     <h1>Enumeration Results</h1>
-    <p class="lead">Performance and result distributions for pips 3 through 10.</p>
+    <p class="lead">Performance and result distributions for pips 3 through 10. Times are CPU time (summed across all cores used), not wall-clock.</p>
   </header>
 
   <section class="cards" id="cards"></section>
@@ -74,15 +84,10 @@
   </section>
 
   <section class="results" id="results"></section>
-  <footer>
-Generated from <code>results.txt</code><br><br>
-<a href="https://github.com/datamerc/tiles2/blob/main/results.txt" target="_blank" rel="noopener noreferrer">
-View raw results.txt on GitHub
-</a>
-</footer>
-</main>
 
-<script id="raw-data" type="text/plain">
+  <details class="raw-data-block">
+    <summary>Raw data (results.txt) - every value, count, CPU time and peak RAM, pips 3-10</summary>
+    <pre id="raw-data" class="raw-pre">
 pips = 3
 
 User CPU time used:      283µs
@@ -413,7 +418,14 @@ Peak RAM change (MaxRSS): 11593 MB
 64 3842314275732852999971518650777600000000000
 65 2487829387165156618686594809856000000000000
 66 829276462388385539562198269952000000000000
-</script>
+</pre>
+  </details>
+
+  <footer>
+    Source: <a href="https://github.com/datamerc/tiles2" target="_blank" rel="noopener noreferrer">datamerc/tiles2</a>
+  </footer>
+</main>
+
 <script>
 const source = document.getElementById('raw-data').textContent.trim();
 const chunks = source.split(/-{5,}/).map(s => s.trim()).filter(Boolean);
@@ -435,6 +447,13 @@ function timeToMs(text) {
   return ms;
 }
 
+// Go's duration format gives at most one fractional component (the
+// smallest present unit, e.g. the "14.208548" in "1h2m14.208548s") -
+// round just that to 2 decimals, leave any h/m integer components as-is.
+function formatTime(text) {
+  return text.replace(/(\d+\.\d+)(µs|ms|s)/, (_, num, unit) => `${Number(num).toFixed(2)}${unit}`);
+}
+
 const runs = chunks.map(chunk => {
   const pips = Number(chunk.match(/pips\s*=\s*(\d+)/)[1]);
   const time = chunk.match(/User CPU time used:\s*([^\n]+)/)[1].trim();
@@ -453,17 +472,16 @@ const formatRam = mb => mb >= 1024 ? `${(mb/1024).toFixed(1)} GB` : `${mb} MB`;
 
 document.getElementById('cards').innerHTML = `
   <div class="card"><div class="label">Pips range</div><div class="value">${runs[0].pips}–${runs.at(-1).pips}</div></div>
-  <div class="card"><div class="label">Fastest run</div><div class="value">${runs[0].time}</div></div>
-  <div class="card"><div class="label">Slowest run</div><div class="value">${runs.at(-1).time}</div></div>
-  <div class="card"><div class="label">Largest peak</div><div class="value">${integer(runs.at(-1).peak.count)}</div></div>
+  <div class="card"><div class="label">Slowest run (CPU time)</div><div class="value">${formatTime(runs.at(-1).time)}</div></div>
   <div class="card"><div class="label">Peak RAM (largest run)</div><div class="value">${formatRam(runs.at(-1).ramMb)}</div></div>
+  <div class="card wide"><div class="label">Largest peak (pips ${runs.at(-1).pips}, value ${runs.at(-1).peak.value})</div><div class="value">${integer(runs.at(-1).peak.count)}</div></div>
 `;
 
 document.getElementById('results').innerHTML = runs.map((run, i) => `
   <details ${i === runs.length - 1 ? 'open' : ''}>
     <summary>
       <span>Pips = ${run.pips}</span>
-      <span><span class="time">${run.time}</span> · ${formatRam(run.ramMb)}</span>
+      <span><span class="time">${formatTime(run.time)}</span> · ${formatRam(run.ramMb)}</span>
     </summary>
     <div class="table-wrap">
       <table>
